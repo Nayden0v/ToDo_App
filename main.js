@@ -5,6 +5,7 @@ const btn = document.querySelector(".btn")
 const btnMode = document.querySelector(".btn-mode")
 const btnClear = document.querySelector(".btn-clear")
 const body = document.querySelector('body');
+const counter = document.querySelector('p')
 
 const todos = JSON.parse(localStorage.getItem('todosArr'));
 
@@ -34,6 +35,7 @@ btnMode.addEventListener("click",function switchMode() {
 function clearList(){
     ulElement.innerHTML = "";
     btnClear.style.visibility = 'hidden'
+    counter.innerHTML = `0 tasks remaining`
 }
 
 
@@ -121,10 +123,9 @@ function createLS(){
             text: todo.innerHTML,
             completed: todo.classList.contains('completed')
         })
+
+        counter.innerHTML = `${todosArr.length} tasks remaining`
     });
 
     localStorage.setItem('todosArr',JSON.stringify(todosArr));
 }
-  
-
-
