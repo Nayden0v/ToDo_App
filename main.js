@@ -1,131 +1,177 @@
-const container = document.querySelector(".todos")
-const input = document.querySelector(".input")
-const ulElement = document.querySelector(".todos-list")
-const btn = document.querySelector(".btn")
-const btnMode = document.querySelector(".btn-mode")
-const btnClear = document.querySelector(".btn-clear")
-const body = document.querySelector('body');
-const counter = document.querySelector('p')
-
-const todos = JSON.parse(localStorage.getItem('todosArr'));
-
-if(todos){
-    todos.forEach(todo => {
-        getTodo(todo);
-    });
-    
+const domElements = {
+    container:document.querySelector(".todos"),
+    input:document.querySelector(".input"),
+    ulElement:document.querySelector(".todos-list"),
+    btnAdd:document.querySelector(".btn"),
+    btnMode:document.querySelector(".btn-mode"),
+    btnClear:document.querySelector(".btn-clear"),
+    body:document.querySelector('body')
 }
 
-btnClear.style.visibility = 'hidden'
+domElements.btnClear.style.visibility = "hidden"
+
+const totalTasks = document.querySelector(".total-tasks span");
+const completedTasks = document.querySelector(".completed-tasks span");
+const remainingTasks = document.querySelector(".remaining-tasks span");
 
 
-btnMode.addEventListener("click",function switchMode() {
+
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+ 
+if (localStorage.getItem("todos")) {
+    todos.map((todo) => {
+    createTodo(todo);
+  });
+}
+
+
+domElements.btnAdd.addEventListener('click', ()=>{
+    let inputValue = domElements.input.value;
+    console.log(inputValue);
+
+    if (inputValue !== ""){
+        const todo = {
+            id: new Date().getTime().toString(),
+            name: inputValue,
+            completed: false
+        };
+        todos.push(todo);
+        localStorage.setItem('todos', JSON.stringify(todos));
+         domElements.btnClear.style.visibility = "visible"
+        createTodo(todo);
+
+    }
+   
+    domElements.input.value = "";
+    domElements.input.focus();
+})
+
+if(todos.length > 0){
+    domElements.btnClear.style.visibility = "visible"
+}
+
+function createTodo(todo){
+   const listEl = document.createElement('li');
+   domElements.ulElement.appendChild(listEl);
+   listEl.setAttribute('id', todo.id);
+   listEl.setAttribute('title','Double click to scratch off the task')
+   listEl.contentEditable = false;
+   if (todo.completed) {
+    listEl.classList.add('complete')};
+   listEl.innerHTML = todo.name;
+
+//    const btnEdit = document.createElement('button')
+//    listEl.appendChild(btnEdit);
+//    btnEdit.classList.add('edit-todo')
+//    btnEdit.innerHTML = "Edit"
+//    btnEdit.addEventListener('click',()=>{
+//     if(btnEdit.innerHTML === "Edit"){
+//         listEl.contentEditable = true;
+//         btnEdit.innerHTML = "Save"
+//     }else{
+//         listEl.contentEditable = false;
+//         btnEdit.innerHTML = "Edit"
+//     }
+//    })
+
+   const btnRemove = document.createElement('button');
+   listEl.appendChild(btnRemove);
+   btnRemove.setAttribute('contenteditable', false)
+   btnRemove.classList.add('remove-todo');
+   btnRemove.setAttribute('title','Remove');
+   btnRemove.innerHTML = '🗑'
+countTodos();
+}
+
+function editTodo(){
+
+}
+
+
+domElements.ulElement.addEventListener('click',(e)=>{
+    if(e.target.classList.contains('remove-todo')){
+        const todoId = e.target.closest('li').id;
+        removeTodo(todoId);
+    }
+    if(domElements.ulElement.children.length < 1){
+        domElements.btnClear.style.visibility = "hidden"
+    }
+});
+
+function removeTodo(todoId){
+    todos = todos.filter((todo) => todo.id != parseInt(todoId));
+
+    localStorage.setItem('todos', JSON.stringify(todos));
+
+    document.getElementById(todoId).remove();
+    
+    countTodos();
+}
+
+
+
+domElements.ulElement.addEventListener('dblclick', (e) =>{
+    e.target.classList.toggle('complete')
+    const todoId = e.target.closest('li').id;
+    updateTodo(todoId, e.target);
+    
+})
+
+
+function updateTodo(todoId, el){
+    const todo = todos.find((todo) => todo.id == parseInt(todoId));
+    if (el.classList.contains('complete')) {
+        todo.completed = !todo.completed
+        }else{
+            todo.completed = !todo.completed
+        }
+    
+    localStorage.setItem('todos', JSON.stringify(todos));
+    countTodos();
+}
+
+
+
+
+function countTodos(){
+    totalTasks.textContent = todos.length;
+    const completedTasksArr = todos.filter((todo)=>todo.completed === true);
+    completedTasks.textContent = completedTasksArr.length;
+    remainingTasks.textContent = todos.length - completedTasksArr.length;
+}
+
+
+domElements.btnClear.addEventListener('click', function clearTodoList(){
+    domElements.ulElement.innerHTML = "";
+    domElements.btnClear.style.visibility = 'hidden'
+    todos = [];
+    localStorage.clear();
+    totalTasks.textContent = 0;
+    completedTasks.textContent = 0;
+    remainingTasks.textContent = 0;
+});
+
+
+
+domElements.btnMode.addEventListener("click",function switchMode() {
     const initialText = 'Dark Mode';
-    if (btnMode.textContent.toLowerCase().includes(initialText.toLowerCase())) {
-    btnMode.textContent = 'Light Mode';
+    if (domElements.btnMode.textContent.toLowerCase().includes(initialText.toLowerCase())) {
+    domElements.btnMode.textContent = 'Light Mode';
     document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
     } else {
-    btnMode.textContent = initialText;
+     domElements.btnMode.textContent = initialText;
     document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
     }
   });
 
+  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
 
+if (currentTheme) {
+    document.documentElement.setAttribute('data-theme', currentTheme);
 
-function clearList(){
-    ulElement.innerHTML = "";
-    btnClear.style.visibility = 'hidden'
-    counter.innerHTML = `0 tasks remaining`
-}
-
-
-function getTodo(todo){
-    let todoText = input.value;
-
-    if(input.value) {
-    const task = document.createElement("li");
-    ulElement.appendChild(task);
-    if (todo.completed) {
-    task.classList.add('completed');
-    };
-
-    task.innerHTML = todoText;
-    task.setAttribute("title","Double click to scratch off the task")
-
-    task.addEventListener('dblclick',()=>{
-        task.classList.toggle('completed');
-        createLS();
-    }); 
-
-    task.addEventListener("contextmenu",(e)=>{
-        e.preventDefault();
-    })
-
-    const divBtns = document.createElement('div'); 
-    divBtns.setAttribute('contenteditable',false);
-    ulElement.appendChild(divBtns);
-
-    const btnEdit = document.createElement('button');
-    const btnRemove = document.createElement('button');
-    divBtns.appendChild(btnEdit);
-    divBtns.appendChild(btnRemove);
-    divBtns.classList.add("btn-list");
-    btnRemove.classList.add("btn-remove");
-    btnEdit.classList.add("btn-edit");
-    btnRemove.innerHTML = `🗑`;
-    btnEdit.innerHTML = `🖉`;
-    btnEdit.setAttribute("title","Edit");
-    btnRemove.setAttribute("title","Remove");
-
-    btnClear.style.visibility = 'visible'
-
-    btnClear.addEventListener("click", clearList)
-
-    btnRemove.addEventListener('click',function removeTodo(){
-        if(ulElement.children.length === 2){
-            btnClear.style.visibility = 'hidden';
-            task.remove();
-            divBtns.remove();
-        }else if(ulElement.children.length > 1){
-            task.remove();
-            divBtns.remove();
-        }
-    })
-    btnEdit.addEventListener('click',function editTodo() {
-        if(btnEdit.innerHTML === '🖉'){
-            task.contentEditable = true;
-            task.classList.toggle('completed',false);
-            btnEdit.innerHTML = `🖫`
-            task.focus();
-        }else if(btnEdit.innerHTML === `🖫`){
-            task.contentEditable = false;
-            btnEdit.innerHTML = '🖉'
-        }
-    })
-    input.value = "";
-    input.focus();
-
-    createLS();
-    } 
-}
-
-btn.addEventListener("click",  getTodo)
-
-
-
-function createLS(){
-    const listTodos = document.querySelectorAll('li');
-
-    const todosArr = [];
-
-    listTodos.forEach(todo=>{
-        todosArr.push({
-            text: todo.innerHTML,
-            completed: todo.classList.contains('completed')
-        })
-
-        counter.innerHTML = `${todosArr.length} tasks remaining`
-    });
-
-    localStorage.setItem('todosArr',JSON.stringify(todosArr));
+    if (currentTheme === 'dark') {
+        domElements.btnMode.textContent = "Light Mode";
+    }
 }

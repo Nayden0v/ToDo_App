@@ -53,7 +53,7 @@ h1 {
     text-align: center;
     opacity: 0.4;
 }
-.todos{
+.container{
     max-width: 100%;
     margin: auto;
     width: 400px;
@@ -156,7 +156,7 @@ h1 {
     display: block;
 }
 
-.btn-edit{
+.edit-todo{
     /* display: none; */
     font-size: 1.5rem;
     color: var(--btnactions-color);
@@ -168,7 +168,7 @@ h1 {
     
 }
 
-.btn-edit:hover{
+.edit-todo:hover{
     /* display: none; */
     font-size: 1.5rem;
     color: var(--btnactions-color2);
@@ -180,7 +180,7 @@ h1 {
     
 }
 
-.btn-remove{
+.remove-todo{
     /* display: none; */
     font-size: 1.5rem;
     color: var(--btnactions-color);
@@ -188,19 +188,23 @@ h1 {
     border-style: none;
     position: relative;
     cursor: pointer;
-    /* float: right; */
+    margin:1ch;
+    margin-right: 0ch;
+    float: right;
     background-color: var(--li-color-bg);
 }
 
-.btn-remove:hover{
-    /* display: none; */
+.remove-todo:hover{
     font-size: 1.5rem;
     color: var(--btnactions-color2);
     font:larger;
+    display: block;
     border-style: none;
     position: relative;
     cursor: pointer;
-    /* float: right; */
+    margin:1ch;
+    margin-right: 0ch;
+    float: right;
     background-color: var(--li-color-bg);
 }
 
@@ -236,11 +240,11 @@ h1 {
    
 }
 
-.todos-list li:hover + .btn-list{
+.todos-list li:hover + .remove-todo{
     display: block;
 }
 
-.todos-list li.completed {
+.todos-list li.complete {
     text-decoration: line-through;
   }
 
@@ -248,6 +252,16 @@ h1 {
     font-size: 1.5rem;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     margin-left: 17ch;
+  }
+
+  .todo-stats{
+    background-color:none;
+    font-size: 1.6rem;
+    display: flex;
+    margin: 10ch;
+    justify-content: center;
+    /* justify-content: space-around; */
+    justify-content: space-evenly;
   }
 
 

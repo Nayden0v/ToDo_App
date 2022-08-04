@@ -14,13 +14,22 @@
 
     <h1>Todos</h1>
 
-    <div class="todos">
-        <input type ="text" id="input" class="input" placeholder="Write your todo here..."/>
-        <button class="btn">Add todo</button>
+    <div class="container">
+        <input type ="text" id="input" class="input" placeholder="Write your task here..."/>
+        <button class="btn">Add task</button>
         <button class="btn-clear">Clear</button>
         <ul class="todos-list"></ul>
-        <p class="counter">0 tasks remaining</p>
     </div>
-
+    <div class="todo-stats">
+        <div class="total-tasks">
+          Total Tasks: <span>0</span>
+        </div>
+        <div class="completed-tasks">
+          Completed Tasks: <span>0</span>
+        </div>
+        <div class="remaining-tasks">
+          Remaining Tasks: <span>0</span>
+        </div>
+      </div>
 </body>
 </html>
